@@ -40,7 +40,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100">
       <Header
-        projectName="HiveWat"
+        projectName="HiveWay"
         latestUpdate={
           latestData
             ? new Date(latestData.createdAt).toLocaleString()
