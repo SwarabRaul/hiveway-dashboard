@@ -1,5 +1,3 @@
-// src/App.js
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Header from './components/Header';
@@ -9,6 +7,7 @@ import Timeline from './components/Timeline';
 
 function App() {
   const [latestData, setLatestData] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const fetchLatestData = async () => {
     try {
@@ -25,57 +24,54 @@ function App() {
     }
   };
 
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.classList.toggle('dark');
+  };
+
   useEffect(() => {
     fetchLatestData();
-    const interval = setInterval(fetchLatestData, 60000); // Refresh every 60 seconds
+    const interval = setInterval(fetchLatestData, 60000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
       <Header
-        projectName="HiveWay"
+        projectName="TDS and Salinity BC"
         latestUpdate={
           latestData
             ? new Date(latestData.createdAt).toLocaleString()
             : 'Loading...'
         }
+        isDarkMode={isDarkMode}
+        toggleTheme={toggleTheme}
       />
 
       <main className="container mx-auto p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatusCard
-            title="Sound"
-            value={latestData ? latestData.sound : '--'}
-            unit="dB"
+            title="TDS"
+            value={latestData ? latestData.TDS : '--'}
+            unit="ppm"
           />
           <StatusCard
-            title="Temperature"
-            value={latestData ? latestData.temperature : '--'}
-            unit="°C"
-          />
-          <StatusCard
-            title="Humidity"
-            value={latestData ? latestData.humidity : '--'}
-            unit="%"
+            title="Salinity"
+            value={latestData ? latestData.Salinity : '--'}
+            unit="ppt"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <ChartComponent
-            title="Sound Over Time"
-            dataKey="sound"
-            color="rgba(59, 130, 246, 1)" // Blue
+            title="TDS Over Time"
+            dataKey="TDS"
+            color="rgba(59, 130, 246, 1)"
           />
           <ChartComponent
-            title="Temperature Over Time"
-            dataKey="temperature"
-            color="rgba(220, 38, 38, 1)" // Red
-          />
-          <ChartComponent
-            title="Humidity Over Time"
-            dataKey="humidity"
-            color="rgba(34, 197, 94, 1)" // Green
+            title="Salinity Over Time"
+            dataKey="Salinity"
+            color="rgba(220, 38, 38, 1)"
           />
         </div>
 
