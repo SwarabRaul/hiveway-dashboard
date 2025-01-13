@@ -24,6 +24,7 @@ ChartJS.register(
 
 const ChartComponent = ({ title, dataKey, color }) => {
     const [chartData, setChartData] = useState({ labels: [], datasets: [] });
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchChartData = async () => {
@@ -31,10 +32,19 @@ const ChartComponent = ({ title, dataKey, color }) => {
                 const response = await axios.get('https://hivewaybackend.onrender.com/');
                 if (Array.isArray(response.data)) {
                     const data = response.data;
-                    const labels = data.map((item) =>
+
+                    // Sort data by createdAt in ascending order
+                    const sortedData = data.sort(
+                        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+                    );
+
+                    // Get the last 10 entries
+                    const recentData = sortedData.slice(-10);
+
+                    const labels = recentData.map((item) =>
                         new Date(item.createdAt).toLocaleTimeString()
                     );
-                    const values = data.map((item) => item[dataKey]);
+                    const values = recentData.map((item) => item[dataKey]);
 
                     setChartData({
                         labels,
@@ -48,9 +58,13 @@ const ChartComponent = ({ title, dataKey, color }) => {
                             },
                         ],
                     });
+                    setError(null); // Clear previous errors
+                } else {
+                    setError('Unexpected data format.');
                 }
             } catch (error) {
                 console.error('Error fetching chart data:', error);
+                setError('Failed to fetch chart data.');
             }
         };
 

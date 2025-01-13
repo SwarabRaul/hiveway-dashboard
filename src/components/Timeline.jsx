@@ -4,6 +4,7 @@ import { FaCircle } from 'react-icons/fa';
 
 const Timeline = () => {
     const [events, setEvents] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchTimeline = async () => {
@@ -11,10 +12,23 @@ const Timeline = () => {
                 const response = await axios.get('https://hivewaybackend.onrender.com/');
                 if (Array.isArray(response.data)) {
                     const data = response.data;
-                    setEvents(data.slice(-10).reverse()); // Latest 10 events in chronological order
+
+                    // Sort data by createdAt in ascending order
+                    const sortedData = data.sort(
+                        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+                    );
+
+                    // Get the last 10 entries
+                    const recentData = sortedData.slice(-10);
+
+                    setEvents(recentData);
+                    setError(null); // Clear previous errors
+                } else {
+                    setError('Unexpected data format.');
                 }
             } catch (error) {
                 console.error('Error fetching timeline data:', error);
+                setError('Failed to fetch timeline data.');
             }
         };
 
