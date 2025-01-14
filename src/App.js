@@ -8,6 +8,7 @@ import Timeline from './components/Timeline';
 function App() {
   const [latestData, setLatestData] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [error, setError] = useState(null); // Declare the error state variable
 
   const fetchLatestData = async () => {
     try {
